@@ -46,7 +46,7 @@ function RecuperationEmail(props){
                 <Text style={styles.title}>JazzDelivery</Text>
             </View>
             <Text style={styles.text}>Ingrese su E-mail de recuperacion. Enviaremos un correo con su nueva contraseña</Text>
-            <TextInput style={styles.input} placeholder='Ejemplo@mail.com' onChangeText={t=>{setEmail(t)}} defaultValue={email}></TextInput>
+            <TextInput placeholderTextColor='gray' style={styles.input} placeholder='Ejemplo@mail.com' onChangeText={t=>{setEmail(t)}} defaultValue={email}></TextInput>
             <SimpleButton onPress={handlePressEnviar} text='Enviar' />
         
             <AwesomeAlert
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     header:{
         display: 'flex',
         alignItems: 'center',
-        marginTop: 100,
+        marginTop: 50,
         marginBottom: 60
     },  
     title:{
@@ -140,7 +140,9 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderColor: 'gray',
         borderWidth: 1,
-        width: 200
+        width: 200,
+        textAlign: 'center',
+        color: 'black'
     }
 })
 

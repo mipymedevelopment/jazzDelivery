@@ -119,8 +119,8 @@ function Perfil(props){
                 <View style={styles.bodyContainer}>
                     <View style={styles.newPassContainer}>
                         <View>
-                            <TextInput secureTextEntry={true} style={styles.input} placeholder='Nueva constraseña' onChangeText={t=>{setNewPass(t)}} defaultValue={newPass} />
-                            <TextInput secureTextEntry={true} style={styles.input} placeholder='Confirmar contraseña' onChangeText={t=>{setNewPassConfirm(t)}} defaultValue={newPassConfirm} />
+                            <TextInput placeholderTextColor='gray' secureTextEntry={true} style={styles.input} placeholder='Nueva constraseña' onChangeText={t=>{setNewPass(t)}} defaultValue={newPass} />
+                            <TextInput placeholderTextColor='gray' secureTextEntry={true} style={styles.input} placeholder='Confirmar contraseña' onChangeText={t=>{setNewPassConfirm(t)}} defaultValue={newPassConfirm} />
                         </View>
                         <View style={styles.buttonContainer}>
                             <SimpleButton text='Cambiar contraseña' onPress={()=>{SetShowAlertPassConfirm(true)}} />
@@ -268,7 +268,9 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderWidth: 1,
         borderRadius: 5,
-        margin: 5
+        margin: 5,
+        color: 'black',
+        textAlign: 'center'
     },
     buttonContainer:{
         display: 'flex',

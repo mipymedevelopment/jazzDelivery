@@ -56,8 +56,8 @@ function Login(props) {
             <View style={styles.Container}>
                 <Icons name='paper-plane' size={100} color='black'/>
                 <Text style={styles.title}>JazzDelivery</Text>
-                <TextInput style={styles.input} placeholder='Usuario' onChangeText={t=>{SetUser(t)}} defaultValue={user} />
-                <TextInput secureTextEntry={true} style={styles.input} placeholder='Contraseña' onChangeText={t=>{SetPassword(t)}} defaultValue={password} />
+                <TextInput placeholderTextColor='gray' style={styles.input} placeholder='Usuario' onChangeText={t=>{SetUser(t)}} defaultValue={user} />
+                <TextInput placeholderTextColor='gray' secureTextEntry={true} style={styles.input} placeholder='Contraseña' onChangeText={t=>{SetPassword(t)}} defaultValue={password} />
                 <View style={styles.buttonContainer} >
                     <SimpleButton text='  Login  ' onPress={handlePressLogin}/>
                 </View>
@@ -93,6 +93,8 @@ const styles = StyleSheet.create({
     },
     input:{
         backgroundColor: 'white',
+        color:'black',
+        fontSize: 14,
         width: 200,
         margin: 5,
         textAlign: 'center',

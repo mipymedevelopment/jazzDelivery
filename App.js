@@ -29,9 +29,9 @@ const App  = () => {
   const setUserEmail_ = (u) =>{
     setUSerEmail(u)
   }
-
+  //http://10.0.2.2:4001
   return (
-    <Context.Provider value={{userEmail,setUserEmail_,apiUrl:'http://10.0.2.2:4001'}}>
+    <Context.Provider value={{userEmail,setUserEmail_,apiUrl:'http://jazzapi.herokuapp.com'}}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerTitleAlign:'center'}}>
           <Stack.Screen name='Login' component={Login} options={{headerShown:false}}/>
