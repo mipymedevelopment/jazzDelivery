@@ -1,7 +1,7 @@
 import React,{useState, useEffect,useContext} from 'react'
 import {View, Text, StyleSheet,ScrollView} from 'react-native'
 import AwesomeAlert from 'react-native-awesome-alerts';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Context from '../utils/Context'
 import SimpleButton from '../components/SimpleButton'
@@ -17,24 +17,36 @@ function Detalle(props){
     props.navigation.setOptions({title: 'Detalle'})
 
     const loadVendedor = async () =>{
-        let response = await fetch(`${apiUrl}/vendedores?seller=${envio.seller}`)
-        response = await response.json()
-        setVendedor(response.response)
+        let jwt = await AsyncStorage.getItem('jwt')
+        let response = await fetch(`${apiUrl}/vendedores?seller=${envio.seller}`,{
+            headers:{'Authorization': 'Bearer ' + jwt}
+        })
+        if(response.status === 401){
+            props.navigation.navigate('Login')
+        }else{
+            response = await response.json()
+            setVendedor(response.response)
+        }
     }
 
     const handlePressEntregado = async () =>{
+        let jwt = await AsyncStorage.getItem('jwt')
         let response = await fetch(`${apiUrl}/envios/entregado`,{
             method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt},
             body: JSON.stringify({
                 _id: envio._id
             })
         })
-        response = await response.json()
-        if(response.response !== 1){
-            showAlert()
+        if(response.status === 401){
+            props.navigation.navigate('Login')
         }else{
-            props.navigation.goBack()
+            response = await response.json()
+            if(response.response !== 1){
+                showAlert()
+            }else{
+                props.navigation.goBack()
+            }
         }
     }
 

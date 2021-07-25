@@ -1,10 +1,13 @@
-import React,{useState} from 'react'
+import React,{useState, useEffect, useContext} from 'react'
 import {ScrollView, View, StyleSheet, Pressable, Text} from 'react-native'
 import Icons from 'react-native-vector-icons/FontAwesome5'
 import AwesomeAlert from 'react-native-awesome-alerts';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import SimpleButton from '../components/SimpleButton'
 import colors from '../utils/colors'
+import Context from '../utils/Context'
+import { watchFile } from 'fs';
 
 /*----------------------------------------------------------------*/
 function generateHorario(){
@@ -24,10 +27,13 @@ var message = `Marca en el horario los horarios que tienes disponible para repar
 
 
 /*----------------------------------------------------------------*/
-function Horario(){
+function Horario(props){
     
     const [h,setH] = useState(generateHorario())
-    const [showAlert_, setShowAlert_] = useState(false)
+    const [showAlertHelp_, setShowAlertHelp_] = useState(false)
+    const [showAlertSave_, setShowAlertSave_] = useState(false)
+    const [showAlertSaveError_, setShowAlertSaveError_] = useState(false)
+    const {apiUrl} = useContext(Context)
 
     const leyenda_horas = ['9.00-10.00','10.00-11.00','11.00-12.00','12.00-13.00','13.00-14.00','14.00-15.00','15.00-16.00','16.00-17.00','17.00-18.00','18.00-19.00','19.00-20.00','20.00-21.00','21.00-22.00','22.00-23.00','23.00-00.00']
     const leyenda_dias = ['l','m','m','j','v','s','d']
@@ -39,9 +45,49 @@ function Horario(){
     }
 
     const handlePressHelp = () =>{
-        setShowAlert_(true)
+        setShowAlertHelp_(true)
     }
-    
+
+    const handlePressGuardar = async () =>{
+        let jwt = await AsyncStorage.getItem('jwt')
+        let response = await fetch(`${apiUrl}/savehorario`,{
+            method: 'PUT',
+            headers:{'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt},
+            body: JSON.stringify({
+                horario: h
+            })
+        })
+        if(response.status === 401){
+            props.navigation.navigate('Login')
+        }else{
+            response = await response.json()
+            if(response.status){
+                setShowAlertSave_(true)
+            }else{
+                setShowAlertSaveError_(true)
+            }
+        }
+    }
+
+    const loadHorario = async ()=>{
+        let jwt = await AsyncStorage.getItem('jwt')
+        let response = await fetch(`${apiUrl}/horario`,{
+            headers: {'Authorization': 'Bearer ' + jwt}
+        })
+        if(response.status === 401){
+            props.navigation.navigate('Login')
+        }else{
+            response = await response.json()
+            if(response.horario){
+                setH(response.horario)
+            }
+        }
+    }
+
+    useEffect(()=>{
+        loadHorario()
+    },[])
+
     return(
         <ScrollView style={sytles.mainContainer}>
             <View style={sytles.leyendaDias}>
@@ -73,11 +119,11 @@ function Horario(){
                 </View>
             </View>
             <View style={sytles.buttonsContainer}>
-                <SimpleButton text='Guardar cambios'/>
+                <SimpleButton text='Guardar cambios' onPress={handlePressGuardar} />
                 <Pressable style={sytles.askButton} onPress={handlePressHelp}><Icons name='question' size={20} color='black'/></Pressable>
             </View>
             <AwesomeAlert
-                show={showAlert_}
+                show={showAlertHelp_}
                 showProgress={false}
                 title="Indicaciones"
                 message={message}
@@ -88,7 +134,37 @@ function Horario(){
                 confirmText="Entendido"
                 confirmButtonColor="#DD6B55"
                 onConfirmPressed={() => {
-                    setShowAlert_(false)
+                    setShowAlertHelp_(false)
+                }}
+                />
+                <AwesomeAlert
+                show={showAlertSave_}
+                showProgress={false}
+                title="Horario guardado"
+                message='El horario se ha guardado con exito'
+                closeOnTouchOutside={true}
+                closeOnHardwareBackPress={false}
+                showCancelButton={false}
+                showConfirmButton={true}
+                confirmText="Continuar"
+                confirmButtonColor="#DD6B55"
+                onConfirmPressed={() => {
+                    setShowAlertSave_(false)
+                }}
+                />
+                <AwesomeAlert
+                show={showAlertSaveError_}
+                showProgress={false}
+                title="Error"
+                message='Ha ocurrido un error guardando su horario'
+                closeOnTouchOutside={true}
+                closeOnHardwareBackPress={false}
+                showCancelButton={false}
+                showConfirmButton={true}
+                confirmText="Continuar"
+                confirmButtonColor="#DD6B55"
+                onConfirmPressed={() => {
+                    setShowAlertSaveError_(false)
                 }}
                 />
         </ScrollView>

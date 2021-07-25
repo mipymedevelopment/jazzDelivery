@@ -2,7 +2,7 @@ import React,{useState, useEffect, useContext} from 'react'
 import {View, Text, ScrollView, Image, StyleSheet,RefreshControl} from 'react-native'
 import {useIsFocused} from '@react-navigation/native'
 import CommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import Context from '../utils/Context'
 import VendedorItem from '../components/VendedorItem'
@@ -21,9 +21,16 @@ function Vendedor(props){
     }
 
     const updateEnvios = async () =>{
-        let response = await fetch(`${apiUrl}/envios/available?seller=${vendedor.name}`)
-        response = await response.json()
-        setEnvios(response.response)
+        let jwt = await AsyncStorage.getItem('jwt')
+        let response = await fetch(`${apiUrl}/envios/available?seller=${vendedor.name}`,{
+            headers: {'Authorization': 'Bearer '+ jwt}
+        })
+        if(response.status === 401){
+            props.navigation.navigate('Login')
+        }else{
+            response = await response.json()
+            setEnvios(response.response)
+        }
     }
 
     const onRefresh = () =>{

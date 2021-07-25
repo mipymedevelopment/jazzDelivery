@@ -1,6 +1,7 @@
 import React,{useState, useContext} from 'react'
 import {View, Text, StyleSheet,ScrollView} from 'react-native'
 import AwesomeAlert from 'react-native-awesome-alerts';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Context from '../utils/Context'
 import SimpleButton from '../components/SimpleButton'
@@ -9,28 +10,32 @@ import SimpleButton from '../components/SimpleButton'
 function Detalle(props){
 
     const [showAlert_, setShowAlert_] = useState(false)
-    const {userEmail, apiUrl} = useContext(Context)
+    const {apiUrl} = useContext(Context)
 
 
     const envio = props.route.params.envio
     const vendedor = props.route.params.vendedor
 
     const handleAceptPress = async () =>{
+        let jwt = await AsyncStorage.getItem('jwt')
         let response = await fetch(`${apiUrl}/envios/aceptar`,{
             method: 'PUT',
-            headers: {'Content-Type':'application/json'},
+            headers: {'Content-Type':'application/json', 'Authorization': 'Bearer ' + jwt},
             body: JSON.stringify({
-                userEmail: userEmail,
                 _id: envio._id
             })
         })
-        response = await response.json()
-        if(response.response !== 1){
-            showAlert()
-        }else{
-            props.navigation.goBack()
+        if(response.status === 401){
+            props.navigation.navigate('Login')
         }
-        
+        else{
+            response = await response.json()
+            if(response.response !== 1){
+                showAlert()
+            }else{
+                props.navigation.goBack()
+            }
+        }
     }
 
     const showAlert = ()=>{

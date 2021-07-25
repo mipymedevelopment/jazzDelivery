@@ -19,6 +19,10 @@ function Home(props){
         props.navigation.navigate('Horario')
     }
 
+    const handlePressPerfil = () =>{
+        props.navigation.navigate('Perfil')
+    }
+
     return(
         <ScrollView>
             <View style={styles.header}> 
@@ -30,7 +34,7 @@ function Home(props){
             </View>
             <HomeItem title='Horarios' onPress={handlePressHorario} icon={calendar_icon} text='Planifica tu semana y coordinate mejor con los vendedores'/>
             <HomeItem title='Repartir' onPress={handlePressRepartir} icon={plane_icon} text='Revisa si hay pedidos y comienza a repartir!'/>
-            <HomeItem title='Perfil' icon={face_icon} text='Actualiza tus datos y gestiona tu cuenta'/>
+            <HomeItem title='Perfil' onPress={handlePressPerfil} icon={face_icon} text='Actualiza tus datos y gestiona tu cuenta'/>
         </ScrollView>
     )
 }

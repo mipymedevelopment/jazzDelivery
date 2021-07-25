@@ -1,6 +1,7 @@
 import React,{useState, useEffect, useContext} from 'react'
 import {View, ScrollView, StyleSheet, ActivityIndicator, Dimensions, RefreshControl} from 'react-native'
 import {useIsFocused} from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import Context from '../utils/Context'
 import DeliveryItem from '../components/DeliverysItem'
@@ -13,11 +14,17 @@ function Deliverys(props){
     const [enCurso, setEnCurso] = useState(0)
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
-    const {userEmail, apiUrl} = useContext(Context)
+    const {apiUrl} = useContext(Context)
 
     const loadWatingDeliverys = async () =>{
         try{
-            let envios = await fetch(`${apiUrl}/envios/available?seller=all`)
+            let jwt = await AsyncStorage.getItem('jwt')
+            let envios = await fetch(`${apiUrl}/envios/available?seller=all`,{
+                headers:{'Authorization': 'Bearer ' + jwt}
+            })
+            if(envios.status === 401){
+                props.navigation.navigate('Login')
+            }
             envios = await envios.json()
             
             var vendedores = {}
@@ -35,7 +42,12 @@ function Deliverys(props){
             let names = Object.keys(vendedores)
 
             for(let i=0 ; i<names.length ; i++){
-                let response = await fetch(`http://10.0.2.2:4001/vendedores?seller=${names[i]}`)
+                let response = await fetch(apiUrl + `/vendedores?seller=${names[i]}`,{
+                    headers: {'Authorization': 'Bearer ' + jwt}
+                })
+                if(envios.status === 401){
+                    props.navigation.navigate('Login')
+                }
                 response = await response.json()
                 vendedores[names[i]].address = response.response.address
                 vendedores[names[i]].picture = response.response.picture
@@ -49,9 +61,16 @@ function Deliverys(props){
     }
 
     const loadingEnCurso = async () =>{
-        let response = await fetch(`${apiUrl}/envios/encurso?repartidor=${userEmail}`)
-        response = await response.json()
-        setEnCurso(response.response.length)
+        let jwt = await AsyncStorage.getItem('jwt')
+        let response = await fetch(`${apiUrl}/envios/encurso`,{
+            headers: {'Authorization': 'Bearer ' + jwt}
+        })
+        if(response.status === 401){
+            props.navigation.navigate('Login')
+        }else{
+            response = await response.json()
+            setEnCurso(response.response.length)
+        }
     }
 
     const handlePressVendedor = (vendedor) =>{

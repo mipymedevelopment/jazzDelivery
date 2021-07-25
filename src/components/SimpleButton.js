@@ -13,7 +13,6 @@ function SimpleButton(props){
 const style = StyleSheet.create({
     button:{
         backgroundColor: colors.darkGreen,
-        alignSelf: 'flex-start',
         padding: 15,
         borderRadius: 3,
         fontWeight: 'bold'
