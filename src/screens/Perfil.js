@@ -10,6 +10,7 @@ import Context from '../utils/Context'
 
 
 const screenHeight = Dimensions.get('screen').height
+const screenWidth = Dimensions.get('screen').width
 
 function passPolicies(pass){
     if(pass.search(' ') !== -1 ){
@@ -28,9 +29,11 @@ function Perfil(props){
     const [showALlertPassFailure, SetShowAlertPassFailure] = useState(false)
     const [showALlertPassIncorrect, SetShowAlertPassIncorrect] = useState(false)
     const [showALlertPassConfirm, SetShowAlertPassConfirm] = useState(false)
+    const [showALlertAbono, SetShowAlertAbono] = useState(false)
     const [contacto, setContacto] = useState('')
     const [newPass,setNewPass] = useState('')
     const [newPassConfirm,setNewPassConfirm] = useState('')
+    const [repartos,setRepartos] = useState(0)
     const {userEmail, apiUrl} = useContext(Context)
 
     const handlePressCerrar = async () =>{
@@ -71,6 +74,16 @@ function Perfil(props){
         props.navigation.navigate('Editar contacto')
     }
 
+    const handlePressAbono = async () =>{
+        let jwt = await AsyncStorage.getItem('jwt')
+        let response = await fetch(`${apiUrl}/abono`,{
+            headers: {'Authorization': 'Bearer ' + jwt}
+        })
+        response = await response.json()
+        setRepartos(response.repartos)
+        SetShowAlertAbono(true)
+    }
+
     const loadContacto = async () =>{
         let jwt = await AsyncStorage.getItem('jwt')
         let response = await fetch(`${apiUrl}/contacto`,{
@@ -97,7 +110,7 @@ function Perfil(props){
                     <View style={styles.emailContainer}>
                         <Text style={styles.email}>{userEmail}</Text>
                         <View style={styles.contactoContainer} >
-                            <Text style={styles.contacto} >Contacto: {contacto}</Text>
+                            <Text style={styles.contacto} >Contacto: +56 {contacto}</Text>
                             <SimpleButton text='Editar' onPress={handlePressContacto} />
                         </View>
                     </View>
@@ -120,7 +133,7 @@ function Perfil(props){
             </View>
 
             <View style={styles.bottomView}>
-                <SimpleButton text='Ver abono' />
+                <SimpleButton text='Ver abono' onPress={handlePressAbono} />
             </View>
             <AwesomeAlert
                 show={showALlertPassSuccess}
@@ -186,6 +199,21 @@ function Perfil(props){
                     SetShowAlertPassConfirm(false)
                 }}
                 />
+                <AwesomeAlert
+                show={showALlertAbono}
+                showProgress={false}
+                title="Abono"
+                message={`Durante este mes has realizado un total de ${repartos} repartos.`}
+                closeOnTouchOutside={true}
+                closeOnHardwareBackPress={false}
+                showCancelButton={false}
+                showConfirmButton={true}
+                confirmText="Continuar"
+                confirmButtonColor="#DD6B55"
+                onConfirmPressed={() => {
+                    SetShowAlertAbono(false)
+                }}
+                />
         </ScrollView>
     )
 }
@@ -212,7 +240,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 25,
         marginTop: 30,
-        marginLeft: 10
+        marginLeft: 10,
+        maxWidth: screenWidth-100
     },
     contactoContainer:{
         display: 'flex',
@@ -230,7 +259,7 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         padding: 5,
         marginBottom: 60,
-        marginTop: 20
+        marginTop: 20,
     },
     bottomView:{
         marginTop: 60

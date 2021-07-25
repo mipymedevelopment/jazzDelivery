@@ -18,6 +18,7 @@ import Perfil from './src/screens/Perfil';
 import ChangeContacto from './src/screens/ChangeContacto';
 
 import Login from './src/screens/Login'
+import RecuperationEmail from './src/screens/RecuperationEmail';
 
 const Stack = createStackNavigator()
 
@@ -43,6 +44,7 @@ const App  = () => {
           <Stack.Screen name='Horario' component={Horario} />
           <Stack.Screen name='Perfil' component={Perfil} />
           <Stack.Screen name='Editar contacto' component={ChangeContacto} />
+          <Stack.Screen name='Recuperar contraseña' component={RecuperationEmail} />
         </Stack.Navigator>
       </NavigationContainer>
     </Context.Provider>

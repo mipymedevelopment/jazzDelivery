@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { ScrollView, View, Text, TextInput, StyleSheet, Dimensions } from 'react-native'
+import { ScrollView, View, Text, TextInput, StyleSheet, Dimensions, Pressable } from 'react-native'
 import Icons from 'react-native-vector-icons/Entypo'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AwesomeAlert from 'react-native-awesome-alerts';
@@ -30,6 +30,10 @@ function Login(props) {
 
     }
 
+    const handlePressForgot = () =>{
+        props.navigation.navigate('Recuperar contraseña')
+    }
+
     const isLogged = async () =>{
         const jwt = await AsyncStorage.getItem('jwt')        
         let response = await fetch(apiUrl + '/isauth',{
@@ -57,6 +61,7 @@ function Login(props) {
                 <View style={styles.buttonContainer} >
                     <SimpleButton text='  Login  ' onPress={handlePressLogin}/>
                 </View>
+                <Pressable onPress={handlePressForgot}><Text>Olvide mi contraseña</Text></Pressable>
                 <Text style={styles.footer} >Acerca de nosotros</Text>
             </View>
             <AwesomeAlert
